@@ -15,7 +15,7 @@ CMDS='[
     {"command":"version", "func":"version"},
     {"command":"iptv", "func":"iptv_main"},
     {"command":"list", "func":"list_files"},
-    {"command":"update", "func":"update"}
+    {"command":"update", "func":"yt_dlp_update"}
 ]'
 command=""
 func=""

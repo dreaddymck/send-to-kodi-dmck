@@ -23,11 +23,6 @@ function main() {
         unset INPUT
         ytdl_dlrz
     fi
-    if [[ "$INPUT" =~ ^(update)$ ]]; then
-        history -s "$INPUT"
-        unset INPUT
-        $YTDLP -U
-    fi
     if [[ -f "$SEND_TO_KODI_DIR/lib/commands" ]]; then
         source "$SEND_TO_KODI_DIR/lib/commands"
     fi

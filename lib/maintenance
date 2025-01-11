@@ -41,3 +41,8 @@ function list_files() {
     fi
 
 }
+function yt_dlp_update(){
+    history -s "$INPUT"
+    unset INPUT
+    $YTDLP -U
+}
