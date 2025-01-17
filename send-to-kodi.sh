@@ -3,7 +3,8 @@
 #TODO: Create web application support
 #TODO: option in application to change IPTV playlist
 # SCRIPTNAME=$(basename "$0")
-
+SEND_TO_KODI_TMP=$(dirname $(mktemp -u))
+SEND_TO_KODI_PWD=$(pwd)
 SEND_TO_KODI_DIR="$(dirname "$(readlink -f "$0")")"
 source "$SEND_TO_KODI_DIR/lib/maintenance"
 source "$SEND_TO_KODI_DIR/lib/requirements"
@@ -19,15 +20,23 @@ source "$SEND_TO_KODI_DIR/lib/kodi/kodi_requests"
 source "$SEND_TO_KODI_DIR/lib/main"
 source "$SEND_TO_KODI_DIR/lib/start"
 
-[[ $REMOTE ]] || error "Kodi remote address NOT specified, see --help"
+HISTFILE=$HOME/.config/send_to_kodi/.send_to_kodi_history
+HISTCONTROL=ignoreboth
+shopt -s histappend
+
 if [ ! -d "$DOWNLOAD_DIR" ]; then
     echo "Invalid download directory, update DOWNLOAD_DIR in $SEND_TO_KODI_CONF."
 fi
 
+# Load ytdl environment,
+# Bypass $REMOTE check
+# Default to tmp directory
+if [[ "$INPUT" =~ ^(dlrz|dl|rz)$ ]]; then
+    unset INPUT
+    cd "$SEND_TO_KODI_TMP" && ytdl_dlrz
+    exit
+fi
 
+[[ $REMOTE ]] || error "Remote address NOT specified, see --help"
 send_to_kodi_banner
-
-HISTFILE=$HOME/.config/send_to_kodi/.send_to_kodi_history
-HISTCONTROL=ignoreboth
-shopt -s histappend
 main
