@@ -57,7 +57,7 @@ Provides the following services
    REMOTE_SSH=""
    REMOTE_PATH=""
    LIMIT_RATE="2000K"
- 
+   UPDATECMD="yt-dlp -U"
    ```
 
 5. Run it from the command line:
@@ -89,9 +89,9 @@ Provides the following services
    ```
 
 8. Commands:
-   
+
    MAIN interface
-    
+
    ```text
    help                   display this help menu
    stop|halt              stop kodi playback
@@ -107,10 +107,10 @@ Provides the following services
    iptv                   load iptv interface (work in progress)
    dlrz|dl|rz             switch to download/resize to storage mode.
    ```
-   
+
    DOWNLOAD / RESIZE interface
 
-   ```text  
+   ```text
    home|main              back to main interface
    list                   list all media in destination folder.
    ```
