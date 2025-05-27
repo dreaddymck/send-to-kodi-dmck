@@ -34,6 +34,7 @@ REMOTE_SSH=""
 REMOTE_PATH=""
 LIMIT_RATE="2000K"
 PWD=$(pwd)
+UPDATECMD="yt-dlp -U"
 EOF
 
 fi
