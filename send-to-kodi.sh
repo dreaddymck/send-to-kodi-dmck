@@ -2,10 +2,13 @@
 
 #TODO: Create web application support
 #TODO: option in application to change IPTV playlist
+#TODO: Android arm yt-dlp encoding not working properly
+
 # SCRIPTNAME=$(basename "$0")
 SEND_TO_KODI_TMP=$(dirname $(mktemp -u))
 SEND_TO_KODI_PWD=$(pwd)
 SEND_TO_KODI_DIR="$(dirname "$(readlink -f "$0")")"
+SEND_TO_KODI_HISTORY=$HOME/.config/send_to_kodi/.send_to_kodi_history
 source "$SEND_TO_KODI_DIR/lib/maintenance"
 source "$SEND_TO_KODI_DIR/lib/requirements"
 source "$SEND_TO_KODI_DIR/lib/config"
@@ -20,7 +23,7 @@ source "$SEND_TO_KODI_DIR/lib/kodi/kodi_requests"
 source "$SEND_TO_KODI_DIR/lib/main"
 source "$SEND_TO_KODI_DIR/lib/start"
 
-HISTFILE=$HOME/.config/send_to_kodi/.send_to_kodi_history
+HISTFILE=$SEND_TO_KODI_HISTORY
 HISTCONTROL=ignoreboth
 shopt -s histappend
 
