@@ -3,6 +3,7 @@
 #TODO: Create web application support
 #TODO: option in application to change IPTV playlist
 #TODO: Android arm yt-dlp encoding not working properly
+#TODO: dlz is rsync or mv fail, show message, ignore delete.
 
 # SCRIPTNAME=$(basename "$0")
 SEND_TO_KODI_TMP=$(dirname $(mktemp -u))

@@ -22,7 +22,7 @@ function dlrz_main() {
     function dlrz_dl_default(){
         echo "Downloading best available" >&2
         # if ! $YTDLP -S "$OPT_VCODEC",res,ext:mp4:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
-        if ! $YTDLP -S "$OPT_VCODEC",res,acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
+        if ! $YTDLP -S "$OPT_VCODEC",res,acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --restrict-filenames --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
             echo "Search failed:"
             dlrz_read
         fi
@@ -36,7 +36,7 @@ function dlrz_main() {
                 if [[ "$INPUT" =~ $url_item ]]; then
                     echo "Downloading resolution $res or best available" >&2
                     # if $YTDLP -S "$OPT_VCODEC",res:"$res",ext:mp4:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
-                    if $YTDLP -S "$OPT_VCODEC",res:"$res",acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
+                    if $YTDLP -S "$OPT_VCODEC",res:"$res",acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --restrict-filenames --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
                         err=1
                         break
                     fi
