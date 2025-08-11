@@ -34,10 +34,10 @@ function list_files() {
     echo "******************"
     if [[ -n $REMOTE_SSH ]]; then
         # ssh "$REMOTE_SSH" 'ls -A '"$REMOTE_PATH"
-        ssh "$REMOTE_SSH" find "$REMOTE_PATH" -type f -not -path '*/\.*' -printf "%P\n" | sort
+        ssh "$REMOTE_SSH" find "$REMOTE_PATH" -type f -not -path '*/\.*' -printf "%P" | sort
     else
         # ls -A "$DOWNLOAD_DIR"
-        find "$DOWNLOAD_DIR" -type f -not -path '*/\.*' -printf "%P\n" | sort
+        find "$DOWNLOAD_DIR" -type f -not -path '*/\.*' -printf "%P" | sort
     fi
 
 }

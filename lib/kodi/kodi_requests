@@ -54,6 +54,7 @@ function kodi_clear() {
         echo "Request clear playlist:" >&2
     fi
     kodi_request '{"jsonrpc": "2.0", "method": "Playlist.Clear", "params": {"playlistid": 1}, "id": 1}'
+    #kodi_request '{"jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": 1}'
 }
 function kodi_get_active() {
     kodi_request '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id":1}'
