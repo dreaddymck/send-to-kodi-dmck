@@ -70,7 +70,8 @@ function dlrz_main() {
                     rm "$i"
                 fi
             fi
-            if [[ -n $REMOTE_SSH ]] && [[ -n $REMOTE_PATH ]]; then
+
+            if [[ -n $REMOTE_SSH ]] && [[ -n $REMOTE_PATH ]] && ssh_check "$REMOTE_SSH"; then
 
                 rsync -rv --size-only --progress "$mtitle" "$REMOTE_SSH":"$REMOTE_PATH"
                 rm "$mtitle"

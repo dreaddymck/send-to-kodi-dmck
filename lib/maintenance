@@ -47,3 +47,9 @@ function yt_dlp_update(){
     # $YTDLP -U
     $UPDATECMD
 }
+# This script defines a function to check remote ssh connection.
+function ssh_check() {
+   if [[ $1 ]]; then
+       ssh -o BatchMode=yes -o ConnectTimeout=5 "$1" "exit"
+   fi
+}
