@@ -2,7 +2,6 @@
 #
 
 function dlrz_main() {
-
     # dlrz_check_url "$1"
     local url_pattern='(https?|ftp|file|rtsp)://[-[:alnum:]\+&@#/%?=~_|!:,.;]+'
     if [[ ! $1 =~ $url_pattern ]]; then
@@ -10,44 +9,39 @@ function dlrz_main() {
         unset INPUT
         dlrz_read
     fi
+
     err=""
     res=""
     OPT_VCODEC="vcodec"
+
     if [[ -n $VCODEC ]]; then
         OPT_VCODEC="vcodec:$VCODEC"
     fi
-    # if ! err=$(yt-dlp -f bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best --progress --user-agent "'$USER_AGENT'" "$1"); then
-    # if ! err=$(yt-dlp -S res,ext:mp4:m4a --recode mp4 --limit-rate 500K --user-agent "'$USER_AGENT'" "$1"); then
-    # if err="$($YTDLP -f "bestvideo[height<=$res][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2)"; then
+
     function dlrz_dl_default(){
         echo "Downloading best available" >&2
-        # if ! $YTDLP -S "$OPT_VCODEC",res,ext:mp4:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
         if ! $YTDLP -S "$OPT_VCODEC",res,acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --restrict-filenames --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
             echo "Search failed:"
             dlrz_read
         fi
     }
+
     if jq -e . >/dev/null 2>&1 <<<"$RESOLUTION_JSON"; then
         while read -r json_string; do
-            clean_json_string=$(echo "$json_string" | jq -r '.') # Remove escape characters
+            clean_json_string=$(echo "$json_string" | jq -r '.')
             res=$(echo "$clean_json_string" | jq -r '.res')
             while read -r url_item; do
-
                 if [[ "$INPUT" =~ $url_item ]]; then
                     echo "Downloading resolution $res or best available" >&2
-                    # if $YTDLP -S "$OPT_VCODEC",res:"$res",ext:mp4:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
                     if $YTDLP -S "$OPT_VCODEC",res:"$res",acodec:m4a --recode mp4 --limit-rate "$LIMIT_RATE" --restrict-filenames --quiet --progress --user-agent "'$USER_AGENT'" "$1" >&2; then
                         err=1
                         break
                     fi
                 fi
-
             done <<<"$(echo "$clean_json_string" | jq -r '.value[]')"
-
             if [[ -n $err ]]; then
                 break
             fi
-
         done <<<"$(echo "$RESOLUTION_JSON" | jq -c '.[]')"
 
         if [[ -z $err ]]; then
@@ -59,7 +53,6 @@ function dlrz_main() {
 
     for i in *.mp4; do
         if [[ -f "$i" ]]; then
-
             curr_res="$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$i")"
             mtitle="$i"
             if [[ -n $res ]]; then
@@ -72,65 +65,88 @@ function dlrz_main() {
             fi
 
             if [[ -n $REMOTE_SSH ]] && [[ -n $REMOTE_PATH ]] && ssh_check "$REMOTE_SSH"; then
-
                 rsync -rv --size-only --progress "$mtitle" "$REMOTE_SSH":"$REMOTE_PATH"
                 rm "$mtitle"
-
             elif [[ ! $DOWNLOAD_DIR =~ ^($PWD)$ ]]; then
-
                 rsync -rv --size-only --progress "$mtitle" "$DOWNLOAD_DIR"
                 rm "$mtitle"
-
             fi
         fi
     done
+
+    # Clean up the isolated job directory created by send-to-kodi.sh
+    # JOB_DIR is exported from the entry point; guard against unset in case
+    # dlrz_main is ever called from a different context
+    if [[ -n $JOB_DIR ]] && [[ -d $JOB_DIR ]]; then
+        cd "$SEND_TO_KODI_TMP"
+        rm -rf "$JOB_DIR"
+        # Fresh job dir for the next download in this session
+        export JOB_DIR
+        JOB_DIR=$(mktemp -d "$SEND_TO_KODI_TMP/stk-XXXXXX")
+        cd "$JOB_DIR"
+    fi
+
     dlrz_read
 }
-function dlrz_read() {
 
+function dlrz_read() {
     read -r -e -d $'\n' -p '++DOWNLOAD/RESIZE++[url/cmd]: ' INPUT
+
     if [[ -z $INPUT ]]; then
         dlrz_read
     fi
+
     if [[ "$INPUT" =~ ^(exit|quit)$ ]]; then
+        # Clean up current job dir on exit
+        if [[ -n $JOB_DIR ]] && [[ -d $JOB_DIR ]]; then
+            rm -rf "$JOB_DIR"
+        fi
         exit
     fi
+
     dlrz_cmd "$INPUT"
     dlrz_main "$INPUT"
-
 }
-function dlrz_cmd() {
 
+function dlrz_cmd() {
     if [[ "$1" =~ ^(list)$ ]]; then
         unset INPUT
         list_files
         dlrz_read
     fi
+
     if [[ "$1" =~ ^(home|main)$ ]]; then
         unset INPUT
+        # Clean up job dir when returning to main interface
+        if [[ -n $JOB_DIR ]] && [[ -d $JOB_DIR ]]; then
+            rm -rf "$JOB_DIR"
+        fi
         send_to_kodi_banner
         main
     fi
+
     if [[ -f "$SEND_TO_KODI_DIR/lib/commands" ]]; then
         source "$SEND_TO_KODI_DIR/lib/commands"
     fi
+
     if [[ -z $INPUT ]]; then
         unset INPUT
         dlrz_read
     fi
 }
-function ytdl_dlrz() {
 
+function ytdl_dlrz() {
     if [ ! -d "$DOWNLOAD_DIR" ]; then
         echo "Invalid download directory, update DOWNLOAD_DIR in $SEND_TO_KODI_CONF."
         main
     fi
 
     dlrz_banner
+
     if [ $# -eq 0 ]; then
         dlrz_read
     fi
+
     dlrz_cmd "$@"
     dlrz_main "$@"
-
 }

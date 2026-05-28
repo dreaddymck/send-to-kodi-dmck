@@ -21,6 +21,7 @@ REMOTE="kodibox:8080"
 LOGIN="username:password"
 HOST_NAME="$(hostname -i)"
 USER_AGENT="Mozilla/5.0 (Android 14; Mobile; rv:68.0) Gecko/68.0 Firefox/128.0"
+EXTRACTOR_ARGS_VALUE=""
 VCODEC="h264"
 RESOLUTION_JSON='[
     {"res":"360", "value":["twitch.tv","youtube.com"]}
