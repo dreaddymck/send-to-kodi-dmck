@@ -12,6 +12,11 @@ if [[ ! -f "$SEND_TO_KODI_CONF" ]]; then
     #HOST_NAME="$(hostname -I | awk '{print $1}' || hostname -i )" #ipv4 is hostname not visible
     cat >"$SEND_TO_KODI_CONF" <<EOF
 #!/usr/bin/env bash
+KODI_HOST="${KODI_HOST:-127.0.0.1}"
+KODI_PORT="${KODI_PORT:-8080}"
+KODI_USER="${KODI_USER:-kodi}"
+KODI_PASS="${KODI_PASS:-kodi}"
+KODI_URL="http://$KODI_HOST:$KODI_PORT/jsonrpc"
 VERBOSE=0 # display debug activities 0/1
 DOWNLOAD_DIR=~/Download/
 KODI_YOUTUBE=0
@@ -36,6 +41,7 @@ REMOTE_PATH=""
 LIMIT_RATE="2000K"
 PWD=$(pwd)
 UPDATECMD="yt-dlp -U"
+
 EOF
 
 fi
@@ -68,7 +74,7 @@ fi
 config_path="$HOME/.config/iptv/"
 channels_file="$config_path/channels"
 m3u_url_file="$config_path/m3u_url"
-tmp_playlist="/tmp/iptvplaylist"
+tmp_playlist="$SEND_TO_KODI_TMP/iptvplaylist"
 mkdir -p "$config_path"
 
 

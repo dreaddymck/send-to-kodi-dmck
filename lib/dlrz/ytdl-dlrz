@@ -13,6 +13,7 @@ function dlrz_main() {
     err=""
     res=""
     OPT_VCODEC="vcodec"
+    # COOKIES_FROM_BROWSER="firefox:/mnt/c/Users/dread/AppData/Roaming/Mozilla/Firefox/Profiles/zvjx31op.default-release"
 
     if [[ -n $VCODEC ]]; then
         OPT_VCODEC="vcodec:$VCODEC"

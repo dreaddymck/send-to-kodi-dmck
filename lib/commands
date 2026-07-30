@@ -2,6 +2,7 @@
 
 CMDS='[
     {"command":"help|\\?", "func":"show_help"},
+    {"command":"ping", "func":"kodi_ping"},
     {"command":"exit|quit", "func":"exit"},
     {"command":"stop|halt", "func":"kodi_stop"},
     {"command":"pause", "func":"kodi_pause"},

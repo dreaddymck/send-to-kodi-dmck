@@ -36,12 +36,17 @@ Provides the following services
 
    ```bash
    #!/usr/bin/env bash
+   KODI_HOST="${KODI_HOST:-127.0.0.1}"
+   KODI_PORT="${KODI_PORT:-8080}"
+   KODI_USER="${KODI_USER:-kodi}"
+   KODI_PASS="${KODI_PASS:-kodi}"
+   KODI_URL="http://$KODI_HOST:$KODI_PORT/jsonrpc"
    VERBOSE=0 # display debug activities 0/1
    DOWNLOAD_DIR=.~/
    KODI_YOUTUBE=0
    SEND_RAW=0
    REMOTE="kodibox:8080"
-   LOGIN="username:password"
+   ~~LOGIN="username:password".~~
    HOST_NAME="$(hostname -i )"
    SHARE_PORT=8080
    USER_AGENT="Mozilla/5.0 (Android 14; Mobile; rv:68.0) Gecko/68.0 Firefox/128.0"
@@ -63,7 +68,7 @@ Provides the following services
 5. Run it from the command line:
 
    ```bash
-   ./send-to-kodi.sh -r kodibox:8080 -u user:pass https://vimeo.com/174312494
+   ./send-to-kodi.sh or ./send-to-kodi.sh dl
    ```
 
 6. Edit `send-to-kodi.desktop` add your credentials then copy it to your user folder (optional):
@@ -78,13 +83,6 @@ Provides the following services
 7. Options:
 
    ```text
-   -d DIRECTORY           Temporary download directory for high quality streaming
-   -l PORT                Local port number used for file sharing (default 8080)
-   -r HOST:PORT           Kodi remote address
-   -u USERNAME:PASSWORD   Kodi login credentials
-   -x                     Do not try to resolve URL, just send it
-   -y                     Use Kodi's youtube addon instead of youtube-dl
-
    -v                     display git version and last log entry
    ```
 

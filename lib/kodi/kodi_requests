@@ -3,8 +3,23 @@
 response=""
 active_player=""
 
+# function kodi_request_old() {
+#     response="$(curl -X POST -H 'Content-Type: application/json' ${LOGIN:+--user "$LOGIN"} -d "$1" "http://$REMOTE/jsonrpc" 2>/dev/null)"
+#     if [[ -n ${VERBOSE+x} ]] && [[ $VERBOSE == 1 ]]; then
+#         echo "REQUEST:" >&2
+#         jq <<< "$1" >&2
+#         echo "RESPONSE:" >&2
+#         jq <<< "$response" >&2
+#     fi
+#     ! [[ $response =~ '"error":' ]] || error "$response"
+# }
+_auth_flag() {
+    if [[ -n $KODI_USER && -n $KODI_PASS ]]; then
+        echo "-u $KODI_USER:$KODI_PASS"
+    fi
+}
 function kodi_request() {
-    response="$(curl -X POST -H 'Content-Type: application/json' ${LOGIN:+--user "$LOGIN"} -d "$1" "http://$REMOTE/jsonrpc" 2>/dev/null)"
+    response="$(curl -s $(_auth_flag) -H "Content-Type: application/json" -d "$1" "$KODI_URL" 2>/dev/null)"
     if [[ -n ${VERBOSE+x} ]] && [[ $VERBOSE == 1 ]]; then
         echo "REQUEST:" >&2
         jq <<< "$1" >&2
@@ -12,6 +27,23 @@ function kodi_request() {
         jq <<< "$response" >&2
     fi
     ! [[ $response =~ '"error":' ]] || error "$response"
+}
+# Base request function
+# function kodi_request_new() {
+
+    # curl -s \
+    #     $(_auth_flag) \
+    #     -H "Content-Type: application/json" \
+    #     -d "$1" \
+    #     "$KODI_URL" | jq .
+# }
+# --- Ping / version check ---
+function kodi_ping() {
+    kodi_request '{
+        "jsonrpc": "2.0",
+        "method": "JSONRPC.Version",
+        "id": 1
+    }'
 }
 function kodi_stop() {
     kodi_get_active
@@ -58,12 +90,12 @@ function kodi_clear() {
 }
 function kodi_get_active() {
     kodi_request '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id":1}'
-    [[ $? ]] || error "Failed to send - is Kodi running?"
+    [[ $? -eq 0 ]] || error "Failed to send - is Kodi running?"
     unset active_player
     if [[ $response ]]; then
         # echo "$response"  >&2
-        # active_player=$(echo "$response" | jq -c '.result[] | select(.type | contains("video")).playerid')
-        active_player=$(echo "$response" | jq -c '.result[] | select(.type).playerid')
+        active_player=$(echo "$response" | jq -c '.result[] | select(.type | contains("video")).playerid')
+        # active_player=$(echo "$response" | jq -c '.result[] | select(.type).playerid')
     fi
 }
 function kodi_volume() {

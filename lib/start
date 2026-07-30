@@ -10,22 +10,6 @@ while [[ $* ]]; do
         version
         exit
         ;;
-    -d)
-        DOWNLOAD_DIR="$2"
-        shift
-        ;;
-    -l)
-        SHARE_PORT="$2"
-        shift
-        ;;
-    -r)
-        REMOTE="$2"
-        shift
-        ;;
-    -u)
-        LOGIN="$2"
-        shift
-        ;;
     -x) SEND_RAW=1 ;;
     -y) KODI_YOUTUBE=1 ;;
     -g) GUI=1 ;;
