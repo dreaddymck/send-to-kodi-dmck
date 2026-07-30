@@ -5,6 +5,7 @@
 function error() {
     printf '%s\n' "$1" >&2
     # exit 1
+    unset INPUT
     main
 }
 # Show a question dialog or prompt
